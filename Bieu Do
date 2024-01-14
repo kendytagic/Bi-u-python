@@ -1,0 +1,54 @@
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import numpy as np
+from datetime import datetime, timedelta
+
+# Khởi tạo biểu đồ và dữ liệu ban đầu
+fig, ax = plt.subplots()
+line1, = ax.plot([], [], '.-', label='Đường 1', color='red')
+line2, = ax.plot([], [], '.-', label='Đường 2', color='blue')
+x_data, y1_data, y2_data = [], [], []
+
+# Hàm khởi tạo, không cần thay đổi
+def init():
+    start_date = datetime(1990, 1, 1)
+    end_date = datetime(2030, 12, 31)
+    
+    # Tạo danh sách tháng từ 1990 đến 2030
+    months_data = [start_date + timedelta(days=30 * i) for i in range(int((end_date - start_date).days / 30))]
+    
+    # Sử dụng giá trị tối thiểu và tối đa của dữ liệu x để đặt giới hạn trục x
+    ax.set_xlim(min(months_data), max(months_data))
+    ax.set_ylim(0, 10)
+    
+    return line1, line2
+
+# Hàm update với dữ liệu mới cho cả hai đường line
+def update(frame):
+    x_data.append(frame)
+    y1_data.append(np.random.randint(1, 5))
+    y2_data.append(np.random.randint(6, 10))
+    
+    line1.set_data(x_data, y1_data)
+    line2.set_data(x_data, y2_data)
+    
+    # Cập nhật giới hạn trục y để có thể thấy rõ sự thay đổi
+    ax.set_ylim(min(min(y1_data), min(y2_data)), max(max(y1_data), max(y2_data)))
+
+    return line1, line2
+
+# Tạo animation với 30 frame, mỗi frame tương ứng với khoảng 1 năm
+start_date = datetime(1990, 1, 1)
+end_date = datetime(2030, 12, 31)
+ani = FuncAnimation(fig, update, frames=[start_date + timedelta(days=365 * i) for i in range(int((end_date - start_date).days / 365))], init_func=init, blit=True)
+
+# Thêm các nhãn và tiêu đề
+plt.xlabel('Thời gian')
+plt.ylabel('Trục Y')
+plt.title('Biểu đồ Line Chart với hai đường tách biệt chạy theo năm')
+
+# Hiển thị chú thích
+plt.legend()
+
+# Hiển thị animation
+plt.show()
